@@ -1,24 +1,12 @@
-Prefix(:=<o>)
+Prefix(:=<http://example.com/iri#>)
+Prefix(o:=<http://example.com/iri#>)
 Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
 Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
 Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
 Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
 Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
-
-
-Ontology(<http://www.example.com/iri>
-<http://www.example.com/viri>
-
-Declaration(Class(<http://www.example.com/iri#A>))
-Declaration(NamedIndividual(<http://www.example.com/iri#I>))
-
-############################
-#   Named Individuals
-############################
-
-# Individual: <http://www.example.com/iri#I> (<http://www.example.com/iri#I>)
-
-ClassAssertion(<http://www.example.com/iri#A> <http://www.example.com/iri#I>)
-
-
+Ontology(<http://example.com/iri> <http://example.com/viri>
+    Declaration(Class(<http://example.com/iriA>))
+    Declaration(NamedIndividual(<http://example.com/iriI>))
+    ClassAssertion(<http://example.com/iriA> <http://example.com/iriI>)
 )
