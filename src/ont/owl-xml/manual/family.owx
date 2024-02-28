@@ -12,7 +12,7 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Prefix name="family" IRI="http://example.com/owl/families/"/>
-    <Prefix name="family-other" IRI="http://homepages.cs.ncl.ac.uk/phillip.lord/scratch/family-other.owl##"/>
+    <Prefix name="family-other" IRI="http://homepages.cs.ncl.ac.uk/phillip.lord/scratch/family-other.owl#"/>
     <Import>http://homepages.cs.ncl.ac.uk/phillip.lord/scratch/family-other.owl#</Import>
     <Declaration>
         <Class IRI="HappyPerson"/>
