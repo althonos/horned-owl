@@ -2,6 +2,7 @@
 use std::fmt::{Display, Formatter};
 use std::ops::Range;
 
+use pest::RuleType;
 use thiserror::Error;
 
 #[derive(Debug)]
@@ -20,6 +21,15 @@ impl From<usize> for Location{
 impl From<Range<usize>> for Location {
     fn from(r: Range<usize>) -> Self {
         Location::ByteSpan(r)
+    }
+}
+
+impl From<pest::error::InputLocation> for Location {
+    fn from(l: pest::error::InputLocation) -> Self {
+        match l {
+            pest::error::InputLocation::Pos(x) => Location::BytePosition(x),
+            pest::error::InputLocation::Span((x, y)) => Location::ByteSpan(x..y),
+        }
     }
 }
 
@@ -82,5 +92,12 @@ impl From<quick_xml::Error> for HornedError {
 impl From<rio_xml::RdfXmlError> for HornedError {
     fn from(e: rio_xml::RdfXmlError) -> Self {
         Self::ParserError(e.into(), Location::Unknown)
+    }
+}
+
+impl<R: RuleType + 'static> From<pest::error::Error<R>> for HornedError {
+    fn from(e: pest::error::Error<R>) -> Self {
+        let location = e.location.clone().into();
+        Self::ParserError(e.into(), location)
     }
 }
