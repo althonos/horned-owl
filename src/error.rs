@@ -1,11 +1,13 @@
 //! Errors for the Horned-OWL library
 use std::fmt::{Display, Formatter};
+use std::ops::Range;
 
 use thiserror::Error;
 
 #[derive(Debug)]
 pub enum Location {
     BytePosition(usize),
+    ByteSpan(Range<usize>),
     Unknown
 }
 
@@ -15,10 +17,17 @@ impl From<usize> for Location{
     }
 }
 
+impl From<Range<usize>> for Location {
+    fn from(r: Range<usize>) -> Self {
+        Location::ByteSpan(r)
+    }
+}
+
 impl Display for Location {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::BytePosition(u) => write!(f, "Byte Position: {}", u),
+            Self::ByteSpan(r) => write!(f, "Byte Span: {} to {}", r.start, r.end),
             Self::Unknown => write!(f, "Unknown")
         }
     }
