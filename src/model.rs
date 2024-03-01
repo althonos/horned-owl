@@ -991,11 +991,11 @@ components! {
     /// The IRI from which the ontology was actually loaded.
     Meta DocIRI(IRI<A>),
 
-    /// An annotation associated with this Ontology
-    Axiom OntologyAnnotation (Annotation<A>),
-
     /// Declares that an IRI is an import of this ontology
     Axiom Import(IRI<A>),
+
+    /// An annotation associated with this Ontology
+    Axiom OntologyAnnotation (Annotation<A>),
 
     // Declaration Components
 
