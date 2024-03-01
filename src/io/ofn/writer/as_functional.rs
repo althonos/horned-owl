@@ -41,10 +41,13 @@ pub trait AsFunctional<A: ForIRI> {
 
     /// Get a handle for displaying the element, using the given context.
     ///
-    /// Pass around a `PrefixMapping`, allowing the functional representation 
+    /// Pass around a `PrefixMapping`, allowing the functional representation
     /// to be written using abbreviated IRIs when possible.
     ///
-    fn as_functional_with_prefixes<'t>(&'t self, prefix: &'t PrefixMapping) -> Functional<'t, Self, A> {
+    fn as_functional_with_prefixes<'t>(
+        &'t self,
+        prefix: &'t PrefixMapping,
+    ) -> Functional<'t, Self, A> {
         Functional(&self, Some(prefix), None)
     }
 }
@@ -63,7 +66,7 @@ pub struct Functional<'t, T: ?Sized, A: ForIRI>(
 impl<'t, T, A> Display for Functional<'t, &'t T, A>
 where
     Functional<'t, T, A>: Display,
-    A: ForIRI
+    A: ForIRI,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         Functional(*self.0, self.1, self.2).fmt(f)
@@ -131,6 +134,7 @@ macro_rules! derive_tuple2 {
     };
 }
 
+derive_tuple2!(A, IRI<A>, IRI<A>);
 derive_tuple2!(A, Class<A>, Vec<ClassExpression<A>>);
 derive_tuple2!(A, Datatype<A>, DataRange<A>);
 derive_tuple2!(A, ClassExpression<A>, Individual<A>);
@@ -423,11 +427,12 @@ impl<'a, A: ForIRI> Display for Functional<'a, Component<A>, A> {
                     $(Component::$variant(axiom) => {
                         Functional(&axiom, self.1, self.2).fmt(f)
                     }),*
-                    _ => unimplemented!() // TODO;
                 }
             }
         }
         enum_impl!(
+            OntologyID,
+            DocIRI,
             OntologyAnnotation,
             Import,
             DeclareClass,
@@ -821,11 +826,36 @@ impl<A: ForIRI> AsFunctional<A> for curie::PrefixMapping {}
 
 // ---------------------------------------------------------------------------
 
+impl<'a, A: ForIRI> Display for Functional<'a, OntologyID<A>, A> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        match (&self.0.iri, &self.0.viri) {
+            (Some(x), Some(y)) => Functional(&(x, y), self.1, None).fmt(f),
+            (None, Some(y)) => Functional(y, self.1, None).fmt(f),
+            (Some(x), None) => Functional(x, self.1, None).fmt(f),
+            (None, None) => Ok(()),
+        }
+    }
+}
+
+impl<A: ForIRI> AsFunctional<A> for OntologyID<A> {}
+
+// ---------------------------------------------------------------------------
+
+impl<'a, A: ForIRI> Display for Functional<'a, DocIRI<A>, A> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        Functional(&self.0 .0, self.1, None).fmt(f)
+    }
+}
+
+impl<A: ForIRI> AsFunctional<A> for DocIRI<A> {}
+
+// ---------------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
 
-    use std::iter::FromIterator;
     use super::*;
+    use std::iter::FromIterator;
 
     #[test]
     fn test_ofn_declareclass() {
