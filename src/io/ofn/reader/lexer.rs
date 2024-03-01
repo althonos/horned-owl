@@ -1,5 +1,5 @@
-use pest_derive::Parser;
 use pest::iterators::Pairs;
+use pest_derive::Parser;
 
 use crate::error::HornedError;
 
@@ -39,7 +39,7 @@ pub mod test {
                     Err(e) => panic!("parser failed: {}", e),
                 }
             }
-        }
+        };
     }
 
     macro_rules! generate_tests {
@@ -180,5 +180,4 @@ pub mod test {
         type_individual_datatype("type-individual-datatype.ofn"),
         typed_individual_datatype_unqualified("typed-individual-datatype-unqualified.ofn")
     );
-
 }

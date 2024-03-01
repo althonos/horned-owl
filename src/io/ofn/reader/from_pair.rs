@@ -6,15 +6,15 @@ use curie::PrefixMapping;
 use enum_meta::Meta;
 use pest::iterators::Pair;
 
+use crate::error::HornedError;
 use crate::model::*;
 use crate::ontology::set::SetOntology;
 use crate::vocab::OWL2Datatype;
 use crate::vocab::WithIRI;
 use crate::vocab::OWL;
-use crate::error::HornedError;
 
-use super::Rule;
 use super::Context;
+use super::Rule;
 
 // ---------------------------------------------------------------------------
 
@@ -106,7 +106,10 @@ impl<A: ForIRI> FromPair<A> for AnnotatedComponent<A> {
                         DeclareNamedIndividual::from_pair(decl, ctx)?.into()
                     }
                     rule => {
-                        unreachable!("unexpected rule in AnnotatedComponent::Declaration: {:?}", rule)
+                        unreachable!(
+                            "unexpected rule in AnnotatedComponent::Declaration: {:?}",
+                            rule
+                        )
                     }
                 };
 
@@ -471,7 +474,9 @@ impl<A: ForIRI> FromPair<A> for AnnotationValue<A> {
         match inner.as_rule() {
             Rule::IRI => IRI::from_pair(inner, ctx).map(AnnotationValue::IRI),
             Rule::Literal => Literal::from_pair(inner, ctx).map(AnnotationValue::Literal),
-            Rule::AnonymousIndividual => AnonymousIndividual::from_pair(inner, ctx).map(AnnotationValue::AnonymousIndividual),
+            Rule::AnonymousIndividual => {
+                AnonymousIndividual::from_pair(inner, ctx).map(AnnotationValue::AnonymousIndividual)
+            }
             _ => unreachable!(),
         }
     }
@@ -605,10 +610,10 @@ impl<A: ForIRI> FromPair<A> for ClassExpression<A> {
                 let next = pair.next().unwrap();
                 if next.as_rule() == Rule::DataProperty {
                     unimplemented!() // FIXME!!!
-                    // Err(Error::custom(
-                    //     "cannot use data property chaining in `DataSomeValuesFrom`",
-                    //     next.as_span(),
-                    // ))
+                                     // Err(Error::custom(
+                                     //     "cannot use data property chaining in `DataSomeValuesFrom`",
+                                     //     next.as_span(),
+                                     // ))
                 } else {
                     let dr = DataRange::from_pair(next, ctx)?;
                     Ok(ClassExpression::DataSomeValuesFrom { dp, dr })
@@ -620,10 +625,10 @@ impl<A: ForIRI> FromPair<A> for ClassExpression<A> {
                 let next = pair.next().unwrap();
                 if next.as_rule() == Rule::DataProperty {
                     unimplemented!() // FIXME!!!
-                    // Err(Error::custom(
-                    //     "cannot use data property chaining in `DataAllValuesFrom`",
-                    //     next.as_span(),
-                    // ))
+                                     // Err(Error::custom(
+                                     //     "cannot use data property chaining in `DataAllValuesFrom`",
+                                     //     next.as_span(),
+                                     // ))
                 } else {
                     let dr = DataRange::from_pair(next, ctx)?;
                     Ok(ClassExpression::DataAllValuesFrom { dp, dr })
@@ -748,10 +753,10 @@ impl<A: ForIRI> FromPair<A> for IRI<A> {
                 match ctx.mapping.expand_curie(&curie) {
                     Ok(s) => Ok(ctx.build.iri(s)),
                     Err(curie::ExpansionError::Invalid) => {
-                        Err(HornedError::invalid_at("undefined prefix" , span))
+                        Err(HornedError::invalid_at("undefined prefix", span))
                     }
                     Err(curie::ExpansionError::MissingDefault) => {
-                        Err(HornedError::invalid_at("missing default prefix" , span))
+                        Err(HornedError::invalid_at("missing default prefix", span))
                     }
                 }
             }
@@ -1139,11 +1144,9 @@ mod tests {
                 let build = Build::default();
                 let prefixes = PrefixMapping::default();
                 let ctx = Context::new(&build, &prefixes);
-                let item: (SetOntology<String>, _) = FromPair::from_pair(pair, &ctx)
-                    .unwrap();
-
+                let item: (SetOntology<String>, _) = FromPair::from_pair(pair, &ctx).unwrap();
             }
-        }
+        };
     }
 
     macro_rules! generate_tests {
