@@ -33,6 +33,13 @@ impl From<pest::error::InputLocation> for Location {
     }
 }
 
+impl<'i> From<pest::Span<'i>> for Location {
+    fn from(span: pest::Span<'i>) -> Self {
+        Location::ByteSpan(span.start()..span.end())
+    }
+}
+
+
 impl Display for Location {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
