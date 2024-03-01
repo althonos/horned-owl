@@ -858,6 +858,8 @@ macro_rules! impl_ontology {
                         pair = pairs.next().unwrap();
                     }
                 }
+                ontology.insert(ontology_id);
+
 
                 // Process imports
                 for p in pair.into_inner() {
