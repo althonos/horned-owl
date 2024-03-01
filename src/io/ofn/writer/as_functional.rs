@@ -55,11 +55,11 @@ pub trait AsFunctional<A: ForIRI> {
 /// A wrapper for displaying an OWL2 element in functional syntax.
 #[derive(Debug)]
 pub struct Functional<'t, T: ?Sized, A: ForIRI>(
-    // the element to display
+    /// The element to display
     &'t T,
-    // an eventual context to use (for IRI prefixes)
+    /// An eventual context to use (for IRI prefixes)
     Option<&'t PrefixMapping>,
-    // an eventual set of annotations (to render inside axioms)
+    /// An eventual set of annotations (to render inside axioms)
     Option<&'t BTreeSet<Annotation<A>>>,
 );
 
@@ -356,7 +356,11 @@ derive_axiom!(A, TransitiveObjectProperty<A>, TransitiveObjectProperty(0));
 
 impl<'a, A: ForIRI> Display for Functional<'a, AnnotatedComponent<A>, A> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        Functional(&self.0.component, self.1, Some(&self.0.ann)).fmt(f)
+        if self.0.ann.len() > 0 {
+            Functional(&self.0.component, self.1, Some(&self.0.ann)).fmt(f)
+        } else {
+            Functional(&self.0.component, self.1, None).fmt(f)
+        }
     }
 }
 
@@ -727,8 +731,18 @@ impl<'a, A: ForIRI> Display for Functional<'a, IRI<A>, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         if let Some(prefixes) = self.1.as_ref() {
             match prefixes.shrink_iri(self.0) {
-                Ok(curie) => write!(f, "{}", curie),
                 Err(_) => write!(f, "<{}>", self.0),
+                Ok(curie) => {
+                    // FIXME: the `curie` library needs to be updated to 
+                    //        add getters to the `Curie` type, so we can see
+                    //        when a CURIE is prefixed or not
+                    let curie_string = curie.to_string();
+                    if curie_string.contains(":") {
+                        write!(f, "{}", curie)
+                    } else {
+                        write!(f, ":{}", curie)
+                    }
+                }
             }
         } else {
             write!(f, "<{}>", self.0)
@@ -815,6 +829,12 @@ impl<A: ForIRI> AsFunctional<A> for SubObjectPropertyExpression<A> {}
 
 impl<'a, A: ForIRI> Display for Functional<'a, curie::PrefixMapping, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        // FIXME: `curie` needs to be updated to have a getter on `PrefixMapping`
+        //        that gives access to access the optional default prefix,
+        //        instead of doing this horrible thing here
+        if let Ok(value) = self.0.expand_curie(&curie::Curie::new(None, "")) {
+            writeln!(f, "Prefix(:=<{}>)", value)?;
+        }
         for (name, value) in self.0.mappings() {
             writeln!(f, "Prefix({}:=<{}>)", name, value)?;
         }
