@@ -538,6 +538,29 @@ impl<'a, A: ForIRI> Display for Functional<'a, ClassExpression<A>, A> {
                 }
             }
         }
+        macro_rules! data_cardinality {
+            ($name:literal, $n:ident, $dp:ident, $dr:ident, $self:ident, $f:ident) => {
+                match $dr {
+                    DataRange::Datatype(dt) if dt.0.as_ref() == crate::vocab::OWL2Datatype::RDFSLiteral.iri_s() => {
+                        write!(
+                            f,
+                            concat!($name, "({} {})"),
+                            $n,
+                            Functional($dp, $self.1, None),
+                        )
+                    }
+                    _ => {
+                        write!(
+                            f,
+                            concat!($name, "({} {} {})"),
+                            $n,
+                            Functional($dp, $self.1, None),
+                            Functional($dr, $self.1, None)
+                        )
+                    }
+                }
+            }
+        }
         match self.0 {
             Class(exp) => Functional(exp, self.1, None).fmt(f),
             ObjectIntersectionOf(classes) => {
@@ -621,31 +644,13 @@ impl<'a, A: ForIRI> Display for Functional<'a, ClassExpression<A>, A> {
                 )
             }
             DataMinCardinality { n, dp, dr } => {
-                write!(
-                    f,
-                    "DataMinCardinality({} {} {})",
-                    n,
-                    Functional(dp, self.1, None),
-                    Functional(dr, self.1, None)
-                )
+                data_cardinality!("DataMinCardinality", n, dp, dr, self, f)
             }
             DataMaxCardinality { n, dp, dr } => {
-                write!(
-                    f,
-                    "DataMaxCardinality({} {} {})",
-                    n,
-                    Functional(dp, self.1, None),
-                    Functional(dr, self.1, None)
-                )
+                data_cardinality!("DataMaxCardinality", n, dp, dr, self, f)
             }
             DataExactCardinality { n, dp, dr } => {
-                write!(
-                    f,
-                    "DataExactCardinality({} {} {})",
-                    n,
-                    Functional(dp, self.1, None),
-                    Functional(dr, self.1, None)
-                )
+                data_cardinality!("DataExactCardinality", n, dp, dr, self, f)
             }
         }
     }
