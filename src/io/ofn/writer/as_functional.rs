@@ -382,13 +382,24 @@ impl<A: ForIRI> AsFunctional<A> for AnnotatedComponent<A> {}
 
 impl<'a, A: ForIRI> Display for Functional<'a, AnnotationAssertion<A>, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(
-            f,
-            "AnnotationAssertion({} {} {})",
-            Functional(&self.0.ann.ap, self.1, None),
-            Functional(&self.0.subject, self.1, None),
-            Functional(&self.0.ann.av, self.1, None),
-        )
+        if let Some(annotations) = self.2 {
+            write!(
+                f,
+                "AnnotationAssertion({} {} {} {})",
+                Functional(annotations, self.1, None),
+                Functional(&self.0.ann.ap, self.1, None),
+                Functional(&self.0.subject, self.1, None),
+                Functional(&self.0.ann.av, self.1, None),
+            )
+        } else {
+            write!(
+                f,
+                "AnnotationAssertion({} {} {})",
+                Functional(&self.0.ann.ap, self.1, None),
+                Functional(&self.0.subject, self.1, None),
+                Functional(&self.0.ann.av, self.1, None),
+            )
+        }
     }
 }
 
