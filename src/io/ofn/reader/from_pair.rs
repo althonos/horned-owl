@@ -928,7 +928,8 @@ where
                     .add_prefix(prefix.as_str(), iri.as_str())
                     .expect("grammar does not allow invalid prefixes");
             } else {
-                prefixes.set_default(iri.as_str());
+                prefixes.add_prefix("", iri.as_str())
+                    .expect("empty prefix shouldn't fail")
             }
 
             inner = pairs.next().unwrap();
