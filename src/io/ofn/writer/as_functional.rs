@@ -723,9 +723,7 @@ impl<'a, A: ForIRI> Display for Functional<'a, HasKey<A>, A> {
                 n += 1
             }
         }
-        f.write_str(") ")?;
-
-        f.write_str(")")
+        f.write_str("))")
     }
 }
 
