@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::collections::BTreeSet;
 use std::fmt::Display;
 use std::fmt::Error;
@@ -492,6 +493,29 @@ impl<A: ForIRI> AsFunctional<A> for Component<A> {}
 impl<'a, A: ForIRI> Display for Functional<'a, ClassExpression<A>, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         use ClassExpression::*;
+        macro_rules! object_cardinality {
+            ($name:literal, $n:ident, $ope:ident, $bce:ident, $self:ident, $f:ident) => {
+                match $bce.as_ref() {
+                    ClassExpression::Class(cls) if cls.0.as_ref() == crate::vocab::OWL::Thing.iri_s() => {
+                        write!(
+                            f,
+                            concat!($name, "({} {})"),
+                            $n,
+                            Functional($ope, $self.1, None),
+                        )
+                    }
+                    _ => {
+                        write!(
+                            f,
+                            concat!($name, "({} {} {})"),
+                            $n,
+                            Functional($ope, $self.1, None),
+                            Functional($bce.as_ref(), $self.1, None)
+                        )
+                    }
+                }
+            }
+        }
         match self.0 {
             Class(exp) => Functional(exp, self.1, None).fmt(f),
             ObjectIntersectionOf(classes) => {
@@ -542,31 +566,13 @@ impl<'a, A: ForIRI> Display for Functional<'a, ClassExpression<A>, A> {
                 write!(f, "ObjectHasSelf({})", Functional(ope, self.1, None))
             }
             ObjectMinCardinality { n, ope, bce } => {
-                write!(
-                    f,
-                    "ObjectMinCardinality({} {} {})",
-                    n,
-                    Functional(ope, self.1, None),
-                    Functional(bce.as_ref(), self.1, None)
-                )
+                object_cardinality!("ObjectMinCardinality", n, ope, bce, self, f)
             }
             ObjectMaxCardinality { n, ope, bce } => {
-                write!(
-                    f,
-                    "ObjectMaxCardinality({} {} {})",
-                    n,
-                    Functional(ope, self.1, None),
-                    Functional(bce.as_ref(), self.1, None)
-                )
+                object_cardinality!("ObjectMaxCardinality", n, ope, bce, self, f)
             }
             ObjectExactCardinality { n, ope, bce } => {
-                write!(
-                    f,
-                    "ObjectExactCardinality({} {} {})",
-                    n,
-                    Functional(ope, self.1, None),
-                    Functional(bce.as_ref(), self.1, None)
-                )
+                object_cardinality!("ObjectExactCardinality", n, ope, bce, self, f)
             }
             DataSomeValuesFrom { dp, dr } => {
                 write!(
@@ -733,7 +739,7 @@ impl<'a, A: ForIRI> Display for Functional<'a, IRI<A>, A> {
             match prefixes.shrink_iri(self.0) {
                 Err(_) => write!(f, "<{}>", self.0),
                 Ok(curie) => {
-                    // FIXME: the `curie` library needs to be updated to 
+                    // FIXME: the `curie` library needs to be updated to
                     //        add getters to the `Curie` type, so we can see
                     //        when a CURIE is prefixed or not
                     let curie_string = curie.to_string();
