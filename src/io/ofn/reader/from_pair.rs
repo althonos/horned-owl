@@ -749,7 +749,7 @@ impl<A: ForIRI> FromPair<A> for IRI<A> {
                 let mut pname = inner.into_inner().next().unwrap().into_inner();
                 let prefix = pname.next().unwrap().into_inner().next();
                 let local = pname.next().unwrap();
-                let curie = Curie::new(prefix.map(|p| p.as_str()), local.as_str());
+                let curie = Curie::new(Some(prefix.map(|p| p.as_str()).unwrap_or_default()), local.as_str());
                 match ctx.mapping.expand_curie(&curie) {
                     Ok(s) => Ok(ctx.build.iri(s)),
                     Err(curie::ExpansionError::Invalid) => {
