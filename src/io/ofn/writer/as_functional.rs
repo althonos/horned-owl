@@ -416,7 +416,7 @@ impl<A: ForIRI> AsFunctional<A> for AnnotationValue<A> {}
 
 impl<'a, A: ForIRI> Display for Functional<'a, AnonymousIndividual<A>, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        self.0.fmt(f)
+        write!(f, "_:{}", self.0.0.borrow())
     }
 }
 
@@ -619,7 +619,7 @@ impl<'a, A: ForIRI> Display for Functional<'a, ClassExpression<A>, A> {
             DataExactCardinality { n, dp, dr } => {
                 write!(
                     f,
-                    "DataMaxCardinality({} {} {})",
+                    "DataExactCardinality({} {} {})",
                     n,
                     Functional(dp, self.1, None),
                     Functional(dr, self.1, None)
@@ -652,7 +652,7 @@ impl<'a, A: ForIRI> Display for Functional<'a, DataRange<A>, A> {
                 )
             }
             DataOneOf(lits) => {
-                write!(f, "DataUnionOf({})", Functional(lits, self.1, None))
+                write!(f, "DataOneOf({})", Functional(lits, self.1, None))
             }
             DatatypeRestriction(dt, frs) => {
                 write!(
