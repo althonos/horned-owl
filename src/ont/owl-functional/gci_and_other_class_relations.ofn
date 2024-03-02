@@ -9,7 +9,7 @@ Ontology(<http://www.example.com/iri> <http://www.example.com/viri>
     Declaration(Class(o:nucleus))
     Declaration(ObjectProperty(o:bearer_of))
     Declaration(ObjectProperty(o:has_part))
-    EquivalentClasses(ObjectSomeValuesFrom(o:bearer_of o:mononucleate) ObjectSomeValuesFrom(o:has_part o:nucleus))
     SubClassOf(ObjectSomeValuesFrom(o:has_part o:nucleus) ObjectSomeValuesFrom(o:bearer_of o:mononucleate))
+    EquivalentClasses(ObjectSomeValuesFrom(o:bearer_of o:mononucleate) ObjectSomeValuesFrom(o:has_part o:nucleus))
     DisjointClasses(ObjectSomeValuesFrom(o:bearer_of o:mononucleate) ObjectSomeValuesFrom(o:has_part o:nucleus))
 )
