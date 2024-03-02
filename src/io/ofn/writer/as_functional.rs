@@ -195,11 +195,20 @@ macro_rules! derive_declaration {
     ($A:ident, $ty:ty, $inner:ty, $name:ident) => {
         impl<'a, $A: ForIRI> Display for Functional<'a, $ty, $A> {
             fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-                write!(
-                    f,
-                    concat!("Declaration(", stringify!($name), "({}))"),
-                    Functional(&self.0 .0, self.1, None)
-                )
+                if let Some(annotations) = self.2 {
+                    write!(
+                        f,
+                        concat!("Declaration({} ", stringify!($name), "({}))"),
+                        Functional(annotations, self.1, None),
+                        Functional(&self.0.0, self.1, None)
+                    )
+                } else {
+                    write!(
+                        f,
+                        concat!("Declaration(", stringify!($name), "({}))"),
+                        Functional(&self.0.0, self.1, None)
+                    )
+                }
             }
         }
 
