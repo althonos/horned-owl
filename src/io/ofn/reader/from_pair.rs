@@ -906,23 +906,15 @@ impl<A: ForIRI> FromPair<A> for OntologyAnnotation<A> {
 
 // ---------------------------------------------------------------------------
 
-impl<A, O> FromPair<A> for (O, PrefixMapping)
-where
-    A: ForIRI,
-    O: Ontology<A> + FromPair<A>,
-{
-    const RULE: Rule = Rule::OntologyDocument;
+impl<A: ForIRI> FromPair<A> for PrefixMapping {
+    const RULE: Rule = Rule::PrefixDeclarations;
     fn from_pair_unchecked(pair: Pair<Rule>, ctx: &Context<'_, A>) -> Result<Self> {
-        let mut pairs = pair.into_inner();
-
         // Build the prefix mapping and use it to build the ontology
-        let mut prefixes = PrefixMapping::default();
-        let mut inner = pairs.next().unwrap();
-        while inner.as_rule() == Rule::PrefixDeclaration {
+        let mut prefixes = Self::default();
+        for inner in pair.into_inner() {
             let mut decl = inner.into_inner();
             let mut pname = decl.next().unwrap().into_inner();
             let iri = decl.next().unwrap().into_inner().next().unwrap();
-
             if let Some(prefix) = pname.next().unwrap().into_inner().next() {
                 prefixes
                     .add_prefix(prefix.as_str(), iri.as_str())
@@ -931,12 +923,24 @@ where
                 prefixes.add_prefix("", iri.as_str())
                     .expect("empty prefix shouldn't fail")
             }
-
-            inner = pairs.next().unwrap();
         }
+        Ok(prefixes)
+    }
+}
 
+// ---------------------------------------------------------------------------
+
+impl<A, O> FromPair<A> for (O, PrefixMapping)
+where
+    A: ForIRI,
+    O: Ontology<A> + FromPair<A>,
+{
+    const RULE: Rule = Rule::OntologyDocument;
+    fn from_pair_unchecked(pair: Pair<Rule>, ctx: &Context<'_, A>) -> Result<Self> {
+        let mut pairs = pair.into_inner();
+        let prefixes = PrefixMapping::from_pair(pairs.next().unwrap(), &ctx)?;
         let context = Context::new(ctx.build, &prefixes);
-        O::from_pair(inner, &context).map(|ont| (ont, prefixes))
+        O::from_pair(pairs.next().unwrap(), &context).map(|ont| (ont, prefixes))
     }
 }
 
