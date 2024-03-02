@@ -1077,8 +1077,8 @@ components! {
     /// See also: [Property Hierarchies](https://www.w3.org/TR/2012/REC-owl2-primer-20121211/#Property_Hierarchies)
     /// See also: [Property Chains](https://www.w3.org/TR/2012/REC-owl2-primer-20121211/#Property_Chains)
     Axiom SubObjectPropertyOf{
-        sup: ObjectPropertyExpression<A>,
-        sub: SubObjectPropertyExpression<A>
+        sub: SubObjectPropertyExpression<A>,
+        sup: ObjectPropertyExpression<A>
     },
 
     /// An equivalent object properties relationship.
@@ -1183,8 +1183,8 @@ components! {
     ///
     /// See also: [Data Subproperties](https://www.w3.org/TR/owl2-syntax/#Data_Subproperties)
     Axiom SubDataPropertyOf {
-        sup:DataProperty<A>,
-        sub:DataProperty<A>
+        sub:DataProperty<A>,
+        sup:DataProperty<A>
     },
 
     /// An equivalent data property relationship.
@@ -1329,8 +1329,8 @@ components! {
     /// Implies that any annotation of the type `sub_property` is also
     /// an annotation of the type `super_property`.
     Axiom SubAnnotationPropertyOf {
-        sup: AnnotationProperty<A>,
-        sub: AnnotationProperty<A>
+        sub: AnnotationProperty<A>,
+        sup: AnnotationProperty<A>
     },
 
     /// Assert the domain of an `AnnotationProperty`
