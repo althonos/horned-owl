@@ -47,6 +47,12 @@ pub struct IRIString(String);
 
 impl<'a, T> WithIRI<'a> for T where T: Meta<&'a IRIString> {}
 
+impl<'a> AsRef<str> for IRIString {
+    fn as_ref(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
 fn to_meta(s: &str) -> IRIString {
     IRIString(s.to_string())
 }

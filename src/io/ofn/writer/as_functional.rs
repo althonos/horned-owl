@@ -5,8 +5,10 @@ use std::fmt::Error;
 use std::fmt::Formatter;
 
 use curie::PrefixMapping;
+use enum_meta::Meta;
 
 use crate::model::*;
+use crate::vocab::IRIString;
 use crate::ontology::component_mapped::ComponentMappedOntology;
 use crate::ontology::indexed::ForIndex;
 use crate::vocab::WithIRI;
@@ -672,7 +674,8 @@ impl<A: ForIRI> AsFunctional<A> for DataRange<A> {}
 
 impl<'a, A: ForIRI> Display for Functional<'a, Facet, A> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        f.write_str(self.0.iri_str())
+        let iri = self.0.meta();
+        Functional::<_, String>(iri, self.1, None).fmt(f)
     }
 }
 
@@ -745,6 +748,23 @@ impl<'a, A: ForIRI> Display for Functional<'a, IRI<A>, A> {
 }
 
 impl<A: ForIRI> AsFunctional<A> for IRI<A> {}
+
+// ---------------------------------------------------------------------------
+
+impl<'a, A: ForIRI> Display for Functional<'a, IRIString, A> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        if let Some(prefixes) = self.1.as_ref() {
+            match prefixes.shrink_iri(self.0.as_ref()) {
+                Err(_) => write!(f, "<{}>", self.0.as_ref()),
+                Ok(curie) => write!(f, "{}", curie),
+            }
+        } else {
+            write!(f, "<{}>", self.0.as_ref())
+        }
+    }
+}
+
+impl<A: ForIRI> AsFunctional<A> for IRIString {}
 
 // ---------------------------------------------------------------------------
 
