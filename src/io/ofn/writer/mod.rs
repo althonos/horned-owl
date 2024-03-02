@@ -75,7 +75,8 @@ pub fn write<A: ForIRI, AA: ForIndex<A>, W: Write>(
     // Write axioms in order
     for kind in ComponentKind::all_kinds() {
         if kind != ComponentKind::OntologyID && kind != ComponentKind::DocIRI {
-            let mut components = ont.i().component_for_kind(kind);
+            let mut components = ont.i().component_for_kind(kind).collect::<Vec<_>>();
+            components.sort();
             for component in components {
                 writeln!(
                     &mut write,

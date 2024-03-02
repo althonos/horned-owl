@@ -1114,7 +1114,7 @@ mod tests {
         let txt = "Prefix(ex:=<http://example.com/>) Prefix(:=<http://default.com/>) Ontology()";
 
         let mut expected = PrefixMapping::default();
-        expected.set_default("http://default.com/");
+        expected.add_prefix("", "http://default.com/").unwrap();
         expected.add_prefix("ex", "http://example.com/").unwrap();
 
         let pair = OwlFunctionalLexer::lex(Rule::OntologyDocument, txt)
