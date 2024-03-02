@@ -1,4 +1,3 @@
-Prefix(:=<http://www.example.com/iri#>)
 Prefix(o:=<http://www.example.com/iri#>)
 Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
 Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
