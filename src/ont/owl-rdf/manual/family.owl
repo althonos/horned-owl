@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://example.com/owl/families/"
      xml:base="http://example.com/owl/families/"
-     xmlns:family-other="http://homepages.cs.ncl.ac.uk/phillip.lord/scratch/family-other.owl##"
+     xmlns:family-other="http://homepages.cs.ncl.ac.uk/phillip.lord/scratch/family-other.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"

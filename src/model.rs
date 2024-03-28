@@ -1004,11 +1004,11 @@ components! {
     /// The IRI from which the ontology was actually loaded.
     Meta DocIRI(IRI<A>),
 
-    /// An annotation associated with this Ontology
-    Axiom OntologyAnnotation (Annotation<A>),
-
     /// Declares that an IRI is an import of this ontology
     Axiom Import(IRI<A>),
+
+    /// An annotation associated with this Ontology
+    Axiom OntologyAnnotation (Annotation<A>),
 
     // Declaration Components
 
@@ -1484,8 +1484,8 @@ impl<A: ForIRI> ObjectPropertyExpression<A> {
 pub enum SubObjectPropertyExpression<A> {
     // We use Vec here rather than BTreeSet because, perhaps
     // surprisingly, BTreeSet is not itself hashable.
-    ObjectPropertyChain(Vec<ObjectPropertyExpression<A>>),
     ObjectPropertyExpression(ObjectPropertyExpression<A>),
+    ObjectPropertyChain(Vec<ObjectPropertyExpression<A>>),
 }
 
 impl<A: ForIRI> From<ObjectPropertyExpression<A>> for SubObjectPropertyExpression<A> {
